@@ -20,5 +20,4 @@ const newImages = galleryItems
 	.join("");
 
 console.log(newImages);
-
 gallery.innerHTML += newImages;
