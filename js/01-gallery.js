@@ -1,23 +1,43 @@
+"use strict";
 import { galleryItems } from "./gallery-items.js";
-// Change code below this line
-
-console.log(galleryItems);
 
 const gallery = document.querySelector("div");
-const newImages = galleryItems
-	.map(
-		(image) => `<div class="gallery__item">
-        <a class="gallery__link" href=${image.original}>   
-        <img 
-        class="gallerry__image"
-        src=${image.preview}
-        data-source=${image.original}
-        alt="${image.description}"
-        />
-        </a>
-        </div>`
-	)
-	.join("");
+gallery.addEventListener("click", selectImage);
 
-console.log(newImages);
-gallery.innerHTML += newImages;
+function selectImage(event) {
+	event.preventDefault();
+	if (event.target.nodeName !== "IMG") {
+		return;
+	}
+	const selectedImage = event.target.dataset.source;
+	const instance = basicLightbox.create(`
+    <img src="${selectedImage}" width="800" height="600">
+`);
+	instance.show();
+	gallery.addEventListener("keydown", (event) => {
+		if (event.key === "Escape") {
+			instance.close();
+		}
+	});
+}
+createImages();
+
+function createImages() {
+	const items = [];
+	for (let i = 0; i < galleryItems.length; i++) {
+		const div = document.createElement("div");
+		div.classList.add("gallery__item");
+		const link = document.createElement("a");
+		link.classList.add("gallery__link");
+		link.href = galleryItems[i].preview;
+		const image = document.createElement("img");
+		image.src = galleryItems[i].original;
+		image.alt = galleryItems[i].description;
+		image.dataset.source = galleryItems[i].original;
+		image.classList.add("gallery__image");
+		link.appendChild(image);
+		div.appendChild(link);
+		items.push(div);
+	}
+	gallery.append(...items);
+}
